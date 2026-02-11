@@ -2,8 +2,7 @@ import sqlite3,requests, datetime,time , os
 import pandas as pd
 #Nguồn
 URL= "https://assets.msn.com/service/Finance/QuoteSummary?apikey=0QfOX3Vn51YCzitbLaRkTTBadtWpgTN8NZLW0C1SEM&activityId=698745e9-cc23-43d0-a1d7-1474cb056147&ocid=finance-utils-peregrine&cm=vi-vn&it=web&scn=ANON&ids=bxcyrw&intents=Quotes,QuoteDetails&wrapodata=false"
-#Kiểm tra lỗi dữ liệu
-def CheckError():
+def URL_check():
     try:
         check= requests.get(URL, timeout=10)# kiểm tra lỗi nếu >10 giây sẽ ngắt
         check.raise_for_status()
@@ -19,6 +18,7 @@ def CheckError():
         raise RuntimeError("Lỗi dữ liệu")
     
     return item["quote"]
+#Tạo Obbject VIX
 class VIXStock():
     def __init__(self, quote):
         now = datetime.datetime.now()
@@ -60,13 +60,14 @@ class VIXStock():
             )
             """)
         return df
-def main():
-    first_run = True
-    line_counts=0
-    while True:
+    
+#Hàm Input
+def info():
+    while True:   
         os.system("cls" if os.name=="nt" else "clear")
         try:
-            lineMax= int(input("nhập số dòng muốn terminal hiển thị [≥1]:"))
+            global lineMax
+            lineMax = int(input("nhập số dòng muốn terminal hiển thị [≥1]:"))
             if lineMax >= 1:
                 break
             else:
@@ -86,9 +87,14 @@ def main():
             time.sleep(3)
             os.system("cls" if os.name=="nt" else "clear")
             return
+
+#Hàm Run
+def run():
+    first_run = True
+    line_counts=0
     while True:
         try:
-            quote = CheckError()
+            quote = URL_check()
             x =VIXStock(quote)
             if first_run:
                 os.system("cls" if os.name=="nt" else "clear")
@@ -101,7 +107,16 @@ def main():
             print(f"Giá hiện tại: {quote['price']}, thời gian tạo: {x.ts}")
         except Exception as e:
             print("Error:", e)
-
         time.sleep(60)
-if __name__ == "__main__":
-    main()
+
+#Chạy chương trình
+if __name__ == "__main__": 
+    while True:
+        info()
+        try:
+            run()
+        except KeyboardInterrupt:
+            os.system("cls" if os.name=="nt" else "clear")
+            print("Chương trình sẽ khơi động lại sau 3 giây")
+            time.sleep(3)
+            continue
