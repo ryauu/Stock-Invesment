@@ -60,14 +60,38 @@ class VIXStock():
             )
             """)
         return df
-    
+    #Webhook
+    def send_info(self):
+        text = {
+            "embeds":[
+                {
+                    "title":"📈VIX Alert",
+                    "color": int("26ff3c",16),
+                    "fields":[
+                        {"name":"Price:","value":str(self.price),"inline":True},
+                        {"name":"priceChange:","value":str(self.priceChange),"inline":True},
+                        {"name":"priceDayHigh:","value":str(self.priceDayHigh),"inline":True},
+                        {"name":"priceDayLow:","value":str(self.priceDayLow),"inline":True},
+                    ],
+                    "footer":{
+                        "text": self.ts
+                    } 
+                }
+            ]
+        }
+        webhook_URL = os.getenv("WEBHOOK")#Link WEBHOOK
+        return requests.post(webhook_URL,json=text)
+        
 #Hàm Input
 def info():
     while True:   
         os.system("cls" if os.name=="nt" else "clear")
         try:
             global lineMax
-            lineMax = int(input("nhập số dòng muốn terminal hiển thị [≥1]:"))
+            lineMax = int(input("Nhập số dòng muốn terminal hiển thị [≥1]:"))
+            global ky_vong
+            ky_vong = float(input("Nhập giá mục tiêu(Target price) mà bạn mong muốn:"))
+            ky_vong = round(ky_vong,2)
             if lineMax >= 1:
                 break
             else:
@@ -92,6 +116,7 @@ def info():
 def run():
     first_run = True
     line_counts=0
+    alert = True
     while True:
         try:
             quote = URL_check()
@@ -103,7 +128,12 @@ def run():
                 os.system("cls" if os.name=="nt" else "clear")
                 line_counts=0
             line_counts += 1
-            df = x.to_Frame()
+            x.to_Frame()
+            if round(x.price,2) >= ky_vong and alert:
+                x.send_info()
+                alert = False
+            if round(x.price,2)< ky_vong:
+                alert=True
             print(f"Giá hiện tại: {quote['price']}, thời gian tạo: {x.ts}")
         except Exception as e:
             print("Error:", e)
