@@ -1,11 +1,11 @@
-import psycopg2
+import psycopg2,os
 from datetime import datetime
-
+password = os.getenv("password")
 def get_conn():
     return psycopg2.connect(
-        dbname="postgres",   # sau này đổi thành stock_db
+        dbname="postgres",   
         user="postgres",
-        password="0979281257",
+        password=f"{password}",
         host="localhost",
         port="5432"
     )

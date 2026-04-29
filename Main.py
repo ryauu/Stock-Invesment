@@ -25,7 +25,7 @@ def run():
             continue
         stock = VIXStock(data)
 
-        now = time.time()
+        now = time.time() 
         save(stock)
         if stock.price != last_price or now - last_save_time >= 30:
             try:
@@ -37,7 +37,7 @@ def run():
             last_price = stock.price
             last_save_time = now
         
-        if now - last_ohlc_time >= 30:
+        if now - last_ohlc_time >= 60:
             rows = fetch_raw()
             candles = ohlc_func(rows)
             last_5 = {m: candles[m] for m in sorted(candles)[-5:]}
