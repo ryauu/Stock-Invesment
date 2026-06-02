@@ -1,5 +1,4 @@
 from PostgreSQL import get_conn
-from datetime import datetime
 
 def fetch_raw(limit=1000):
     with get_conn() as conn:

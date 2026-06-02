@@ -1,9 +1,12 @@
 import requests, os
-#Nguồn
-URL_VIX= os.getenv("VIX")
-def VIX():
+def fetch_data(ticker:str):
+    #Select multi API
+    url = os.getenv(ticker.upper())
+    if not url:
+        raise RuntimeError(f"Don't have link API for stock {ticker}!")
+    #Get API
     try:
-        check = requests.get(URL_VIX, timeout=10)
+        check = requests.get(url, timeout=10)
         check.raise_for_status()
         res = check.json()
     except requests.RequestException as error:

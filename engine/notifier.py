@@ -1,7 +1,7 @@
 import requests,os,time
 from datetime import datetime
 
-def send(stock):
+def send(stock,ticker:str):
     webhook_URL = os.getenv("WEBHOOK")
     if not webhook_URL:
         print("Thiếu WEBHOOK URL")
@@ -11,13 +11,13 @@ def send(stock):
     time_str = datetime.fromtimestamp(stock.ts).strftime("%d/%m %H:%M:%S")
 
     # 📊 tính toán
-    change = stock.price - stock.priceReference
+    change = stock.priceClose - stock.priceReference
     pct = (change / stock.priceReference) * 100
 
     # 🎨 màu
-    if stock.price > stock.priceReference:
+    if stock.priceClose > stock.priceReference:
         color = int("26ff3c", 16)  # xanh
-    elif stock.price < stock.priceReference:
+    elif stock.priceClose < stock.priceReference:
         color = int("ff3c3c", 16)  # đỏ
     else:
         color = int("f1c40f", 16)  # vàng
@@ -32,10 +32,10 @@ def send(stock):
 
     # 📦 payload
     text = {
-        "content": f"{signal} | VIX {stock.price:.2f} ({pct:+.2f}%)",
+        "content": f"{signal} | VIX {stock.priceClose:.2f} ({pct:+.2f}%)",
         "embeds": [
             {
-                "title": f"{signal} | VIX {stock.price:.2f}",
+                "title": f"{signal} | VIX {stock.priceClose:.2f}",
                 "color": color,
                 "fields": [
                     {
