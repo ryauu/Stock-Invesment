@@ -47,14 +47,7 @@ class PostgresManager:
                     price_high NUMERIC,
                     price_low NUMERIC,
                     price_close NUMERIC,
-                    net_change NUMERIC,
-                    pct_change NUMERIC,
-                    price_reference NUMERIC,
-                    price_floor NUMERIC,
-                    price_ceiling NUMERIC,
                     total_volume BIGINT,
-                    total_buy_volume BIGINT,
-                    total_sell_volume BIGINT,
                     created_at TIMESTAMP
                 );
                 """)
@@ -75,23 +68,16 @@ class PostgresManager:
                     table_name = ticker.lower()
 
                     cur.execute(f"""
-                        INSERT INTO {table_name}(price_open, price_high, price_low,
-                        price_close, net_change, pct_change,
-                        price_reference, price_floor,
-                        price_ceiling, total_volume, total_buy_volume,
-                        total_sell_volume, created_at)
+                        INSERT INTO {table_name}(
+                        price_open, price_high, price_low,
+                        price_close, total_volume, created_at)
                         VALUES (
                         %s, %s, %s,
                         %s, %s, %s,
-                        %s, %s,
-                        %s, %s,%s,
-                        %s, %s)
+                        )
                     """, (
                         stock.priceOpen, stock.priceDayHigh, stock.priceDayLow,
-                        stock.priceClose,stock.netChange,stock.pctChange,
-                        stock.priceReference,stock.priceFloor,
-                        stock.priceCeiling, stock.totalVolume,stock.totalBuyVolume,
-                        stock.totalSellVolume,ts
+                        stock.priceClose,stock.totalVolume,ts
                     ))
         except Exception as e:
             console.print(f"❌ [bold red]Lỗi: {e}")

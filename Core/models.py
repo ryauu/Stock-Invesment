@@ -9,18 +9,8 @@ class model_stock():
         self.priceClose = data["priceClose"]
         self.priceDayHigh= data["priceHigh"]
         self.priceDayLow= data["priceLow"]
-        #Change
-        self.netChange = data["netChange"]
-        self.pctChange = data["pctChange"]
-        #Reference
-        self.priceReference= data["priceReference"]
-        self.priceFloor= data["priceFloor"]
-        self.priceCeiling = data['priceCeiling']
         #Volume
         self.totalVolume = data["totalVolume"]
-        self.totalBuyVolume = data["totalBuyVolume"]
-        self.totalSellVolume = data["totalSellVolume"]
-
     def printed(self):
         t = datetime.datetime.fromtimestamp(self.ts)
 
