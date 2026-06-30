@@ -43,12 +43,11 @@ class PostgresManager:
                     cur.execute(f"""
                     CREATE TABLE IF NOT EXISTS {table_name}(
                     id SERIAL PRIMARY KEY,
-                    price_open NUMERIC,
-                    price_high NUMERIC,
-                    price_low NUMERIC,
-                    price_close NUMERIC,
-                    total_volume BIGINT,
-                    created_at TIMESTAMP
+                    time TIMESTAMP,
+                    open NUMERIC,
+                    high NUMERIC,
+                    low NUMERIC,
+                    close NUMERIC,
                 );
                 """)
                     
@@ -69,8 +68,8 @@ class PostgresManager:
 
                     cur.execute(f"""
                         INSERT INTO {table_name}(
-                        price_open, price_high, price_low,
-                        price_close, total_volume, created_at)
+                        open, high, low,
+                        close, volume, time)
                         VALUES (
                         %s, %s, %s,
                         %s, %s, %s,
