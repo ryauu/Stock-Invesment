@@ -9,9 +9,10 @@ afternoon_end = 15*60 #3:00 PM
 
 def in_trading_time():
     now = datetime.now()
+    if now.weekday() >= 5:  # 5=Thứ 7, 6=Chủ nhật
+        return False
     current = now.hour * 60 + now.minute
-
-    return (morning_start<=current <= morning_end) or (afternoon_start <= current <= afternoon_end)
+    return (morning_start <= current <= morning_end) or (afternoon_start <= current <= afternoon_end)
 
 def until_trading_time(hour,minute):
     now = datetime.now()

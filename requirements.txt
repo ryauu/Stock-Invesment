@@ -1,0 +1,11 @@
+matplotlib==3.11.0
+numpy==2.5.0
+optuna==4.9.0
+pandas==3.0.3
+pandas_ta==0.4.71b0
+psycopg2_binary==2.9.12
+python-dotenv==1.2.2
+Requests==2.34.2
+rich==15.0.0
+scikit_learn==1.9.0
+xgboost==3.3.0
