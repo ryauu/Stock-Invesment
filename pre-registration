@@ -1,0 +1,5 @@
+time: 3:20AM 13/08/2026
+Cấu hình đóng băng: N=32 (RankNet), toàn bộ tham số y hệt lần chạy N=32 gốc — feature set, kiến trúc, loss, threshold CB, vol-targeting...
+Khoảng thời gian holdout: train đến ~23/03/2026, test 01/04/2026 → 06/08/2026
+Tiêu chí PASS/FAIL cụ thể, viết trước khi thấy số — vd: "PASS nếu Sharpe > 0 VÀ MaxDD < -35% design contract không bị phá vỡ", hoặc bất kỳ ngưỡng nào bạn thấy hợp lý cho chính mình
+Cam kết: dù kết quả PASS hay FAIL, đây là lần chạy holdout duy nhất, không quay lại chỉnh sửa
