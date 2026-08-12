@@ -4,12 +4,6 @@ from Database.PostgreSQL import PostgresManager
 from engine.notifier import send
 from engine.realtime import get_next_action
 
-from engine.predictor import Predictor
-from engine.feature_engineering import (
-    generate_features,
-    validate_feature_rows
-)
-
 import time
 from rich.console import Console
 from datetime import datetime
@@ -19,8 +13,6 @@ console = Console()
 def run():
 
     db = PostgresManager()
-    predictor = Predictor()
-    last_predict_day = None
     last_save_time = 0
 
     stocks = ["vix","vnindex"]
@@ -37,32 +29,6 @@ def run():
         # trong while True, TRƯỚC dòng `if not should_run:`
         now_dt = datetime.now()
         today = now_dt.date()
-        if now_dt.hour >= 15 and last_predict_day != today:
-            try:
-                df = db.get_vix_enriched_rows(limit=300)
-                feature_df = generate_features(df)
-                validate_feature_rows(feature_df, required_rows=1)   # validate TRƯỚC predict, xem mục 4
-                prediction = predictor.predict(feature_df)
-                print(f"[AI] Probability Up = {prediction:.4f}")
-
-                latest = db.get_latest_rows("vix", limit=1)
-                if not latest.empty:
-                    row = latest.iloc[0]
-                    stock_for_alert = model_stock({
-                        "priceOpen": row["open"],
-                        "priceHigh": row["high"],
-                        "priceLow": row["low"],
-                        "priceClose": row["close"],
-                        "totalVolume": row["volume"],
-                    })
-                    send(stock_for_alert, "vix", prediction=prediction)
-                else:
-                    console.print("[yellow]Chưa có dữ liệu VIX trong bảng 'vix' để đính kèm thông báo[/yellow]")
-
-                last_predict_day = today
-            except Exception as e:
-                console.print(f"[yellow]Prediction error: {e}")
-
         should_run, sleep_time = get_next_action()
         if not should_run:
             console.print(":pause_button: [dark_orange]Trading Suspended[/dark_orange]")

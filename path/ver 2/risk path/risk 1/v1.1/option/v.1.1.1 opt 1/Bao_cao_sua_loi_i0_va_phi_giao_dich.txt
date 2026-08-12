@@ -1,0 +1,13 @@
+BÁO CÁO PHÂN TÍCH VÀ SỬA LỖI BUG i==0 VÀ MÂU THUẪN EPISODE MDD
+
+1. Phân tích nguyên nhân và cách sửa
+A. Lỗi i == 0 bỏ qua CB-check (Rủi ro ranh giới Fold):
+- Nguyên nhân: Khối lệnh `if i == 0: daily_ret = 0.0` ở đầu vòng lặp run_backtest ban đầu được viết với giả định là khởi đầu backtest chưa có tài sản. Tuy nhiên, trong Walk-Forward liên tục, tại i==0 của fold 2 trở đi, danh mục đã có sẵn (initial_state được truyền vào). Việc hardcode daily_ret = 0.0 và dùng else: đã khiến toàn bộ ngày giao dịch đầu tiên của mỗi fold hoàn toàn bỏ qua việc đánh giá Circuit Breaker (CB) và Rebalance.
+- Cách sửa: Đã loại bỏ hoàn toàn khối `if i == 0:`. Bây giờ, hệ thống luôn lấy cash_balance và giá trị holdings nhân với giá của ngày hôm nay để tính current_value. CB sẽ luôn được check ngay cả trong ngày đầu tiên của fold.
+
+B. Mâu thuẫn Episode MDD (-36.37% vs -37.19%) (Lỗi rò rỉ phí giao dịch):
+- Nguyên nhân: Trong code cũ, biến daily_ret được tính ngay từ đầu ngày `(current_value / prev_value) - 1`. Tuy nhiên, nếu trong ngày đó CB bị kích hoạt hoặc Rebalance diễn ra, một khoản phí fee_cost sẽ bị trừ khỏi danh mục (`current_value -= fee_cost`). Vì daily_ret đã chốt từ trước khi trừ phí, nên mảng portfolio_returns lưu trữ hoàn toàn không bao gồm các khoản hụt do phí giao dịch! Khi tính toán Episode MDD qua cumprod(1 + daily_ret) ở hàm main(), chuỗi NAV luôn "lạc quan" hơn so với NAV thực tế đã chịu phí (lệch vài phần nghìn mỗi lần rebalance/cắt lỗ). Do đó nó bị lệch so với log Drawdown lúc trigger.
+- Cách sửa: Tái cấu trúc lại vòng lặp. daily_ret giờ đây được tính ở cuối cùng của vòng lặp sau khi mọi giao dịch và đóng phí (cắt lỗ CB, Rebalance) đã hoàn tất. `daily_ret = (current_value_sau_phi / prev_value_sau_phi_hom_qua) - 1`. Mảng returns giờ đây phản ánh độ khớp 100% so với NAV danh mục thực tế.
+
+C. Ghi log kiểm tra đối chiếu:
+- Cập nhật hàm main() để in thêm tham số Last Day DD. Cụ thể, khi in kết quả Episode, log sẽ hiển thị Min MDD và Last Day DD (giá trị DD chốt đúng vào ngày bị chuyển thành tiền mặt), giúp đối chiếu trực tiếp con số này với Log `internal_cb_trigger_dd` vừa được thêm vào trong hàm run_backtest.

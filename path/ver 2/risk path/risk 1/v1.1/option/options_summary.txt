@@ -1,0 +1,23 @@
+1. Option 1: Nới lỏng lời hứa (Loose Contract)
+Tên file: 
+model_AI_LSTM_ablation_opt1_loose_contract.py
+Thay đổi chính:
+Vẫn đặt ngưỡng cắt lỗ (Trigger) ở -35% (CB_DRAWDOWN_THRESHOLD_WF = -0.35).
+Nhưng sửa lại lời hứa an toàn cho nhà đầu tư (Design Contract) thành -40% (CB_DESIGN_CONTRACT = -0.40).
+Ý nghĩa: Chấp nhận rủi ro slippage và delay giá đóng cửa, coi mức giảm thực tế lớn hơn -35% là bình thường miễn không vượt qua -40%. Cập nhật N-Registry thành Config #4 (N=15).
+
+2. Option 2: Siết chặt điểm cắt lỗ (Tight Trigger)
+Tên file: 
+model_AI_LSTM_ablation_opt2_tight_trigger.py
+Thay đổi chính:
+Lời hứa an toàn vẫn giữ nguyên là -35% (CB_DESIGN_CONTRACT = -0.35).
+Đẩy ngưỡng kích hoạt (Trigger) lên sớm hơn ở -30% (CB_DRAWDOWN_THRESHOLD_WF = -0.30).
+Ý nghĩa: Tạo vùng đệm 5% để bảo vệ lời hứa -35%. Sẽ văng ra khỏi thị trường sớm hơn nhưng an toàn tuyệt đối về mặt con số MDD. Cập nhật N-Registry thành Config #5 (N=16).
+
+3. Option 3: Đóng băng bản hiện tại (Failed Config / Baseline)
+Tên file: 
+model_AI_LSTM_ablation_opt3_failed_config.py
+Thay đổi chính:
+Lời hứa và ngưỡng kích hoạt đều là -35% (giống hệt script v1.1.1 vừa chạy).
+Tách rõ biến CB_DESIGN_CONTRACT = -0.35 để làm rõ thiết kế mâu thuẫn dẫn tới thất bại, giữ nguyên N=14.
+Ý nghĩa: Lưu trữ lại chính xác điểm thất bại để làm cơ sở (baseline/provenance) báo cáo tại sao các option kia ra đời.
