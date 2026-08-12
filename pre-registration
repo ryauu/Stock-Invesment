@@ -1,5 +1,15 @@
-time: 3:20AM 13/08/2026
-Cấu hình đóng băng: N=32 (RankNet), toàn bộ tham số y hệt lần chạy N=32 gốc — feature set, kiến trúc, loss, threshold CB, vol-targeting...
-Khoảng thời gian holdout: train đến ~23/03/2026, test 01/04/2026 → 06/08/2026
-Tiêu chí PASS/FAIL cụ thể, viết trước khi thấy số — vd: "PASS nếu Sharpe > 0 VÀ MaxDD < -35% design contract không bị phá vỡ", hoặc bất kỳ ngưỡng nào bạn thấy hợp lý cho chính mình
-Cam kết: dù kết quả PASS hay FAIL, đây là lần chạy holdout duy nhất, không quay lại chỉnh sửa
+# HOLDOUT XÁC NHẬN CUỐI CÙNG — CHỈ CHẠY 1 LẦN, KHÔNG DÙNG ĐỂ TUNE
+# Đăng ký ngày: 3:20AM 13/08/2026
+# Cấu hình đóng băng: N=32 (RankNet) — không đổi bất kỳ tham số nào
+#   so với lần chạy N=32 gốc (feature set, kiến trúc LSTM, pairwise
+#   ranking loss, TOP_K_HOLD, toàn bộ risk mgmt/CB/vol-targeting).
+#
+# TIÊU CHÍ PASS/FAIL (viết trước khi chạy, không đổi sau khi thấy số):
+#   PASS nếu: Max Drawdown trong giai đoạn holdout <= 30%
+#   FAIL nếu: Max Drawdown > 30%
+#   (Sharpe ratio holdout vẫn được ghi lại để tham khảo, KHÔNG dùng
+#    làm điều kiện PASS/FAIL)
+#
+# CAM KẾT: dù PASS hay FAIL, đây là lần chạy holdout DUY NHẤT trên
+# N=32. Không quay lại chỉnh tham số rồi chạy lại. Nếu FAIL, ý nghĩa
+# là "N=32 chưa đủ robust ngoài mẫu" — không phải tín hiệu để thử N=35.
