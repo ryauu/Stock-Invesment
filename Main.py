@@ -180,7 +180,7 @@ def run():
                 # DISCORD NOTIFICATION & TERMINAL (Chỉ gửi mã chỉ định)
                 # =========================
                 if ticker == TARGET_TICKER:
-                    if (stock.priceClose != last_prices[ticker] and now - last_save_time >= 30):
+                    if (stock.priceClose != last_prices[ticker] or now - last_save_time >= 30):
                         send(stock, ticker, prediction=prediction)
                         console.print(f"[{ticker.upper()}] {stock.printed()} | Vol: {stock.totalVolume:,}")
                         last_prices[ticker] = stock.priceClose
