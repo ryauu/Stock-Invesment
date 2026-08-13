@@ -1,7 +1,7 @@
 import requests,os,time
 from datetime import datetime
 
-def send(stock,ticker:str):
+def send(stock, ticker:str, prediction=None):
     webhook_URL = os.getenv("WEBHOOK")
     if not webhook_URL:
         print("Thiếu WEBHOOK URL")
@@ -30,35 +30,55 @@ def send(stock,ticker:str):
     else:
         signal = "📊 NORMAL"
 
+    fields = [
+        {
+            "name": "📊 Change",
+            "value": f"{change:+.2f} ({pct:+.2f}%)",
+            "inline": False
+        },
+        {
+            "name": "📈 High",
+            "value": f"{stock.priceDayHigh:.2f}",
+            "inline": True
+        },
+        {
+            "name": "📉 Low",
+            "value": f"{stock.priceDayLow:.2f}",
+            "inline": True
+        },
+        {
+            "name": "⚖️ Ref",
+            "value": f"{stock.priceReference:.2f}",
+            "inline": True
+        }
+    ]
+
+    if prediction:
+        rank = prediction.get("rank", "?")
+        mean_5d = prediction.get("mean_5d")
+        win_rate = prediction.get("win_rate")
+        is_top = prediction.get("is_top_pick")
+        
+        ai_text = f"**Rank:** #{rank}\n"
+        if mean_5d is not None and win_rate is not None:
+            ai_text += f"**Win Rate:** {win_rate:.0f}% (Kỳ vọng: {mean_5d*100:+.2f}%)\n"
+        if is_top:
+            ai_text += "🌟 **Khuyến nghị MUA (Top Pick)**"
+            
+        fields.append({
+            "name": "🤖 AI Insights (RankNet)",
+            "value": ai_text,
+            "inline": False
+        })
+
     # payload
     text = {
-        "content": f"{signal} | VIX {stock.priceClose:.2f} ({pct:+.2f}%)",
+        "content": f"{signal} | {ticker.upper()} {stock.priceClose:.2f} ({pct:+.2f}%)",
         "embeds": [
             {
-                "title": f"{signal} | VIX {stock.priceClose:.2f}",
+                "title": f"{signal} | {ticker.upper()} {stock.priceClose:.2f}",
                 "color": color,
-                "fields": [
-                    {
-                        "name": "📊 Change",
-                        "value": f"{change:+.2f} ({pct:+.2f}%)",
-                        "inline": False
-                    },
-                    {
-                        "name": "📈 High",
-                        "value": f"{stock.priceDayHigh:.2f}",
-                        "inline": True
-                    },
-                    {
-                        "name": "📉 Low",
-                        "value": f"{stock.priceDayLow:.2f}",
-                        "inline": True
-                    },
-                    {
-                        "name": "⚖️ Ref",
-                        "value": f"{stock.priceReference:.2f}",
-                        "inline": True
-                    }
-                ],
+                "fields": fields,
                 "footer": {
                     "text": f"🕒 {time_str}"
                 }

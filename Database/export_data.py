@@ -31,8 +31,9 @@ warnings.filterwarnings('ignore', category=UserWarning)
 
 # Xác định thư mục StockINVES (thư mục cha của thư mục Database chứa file này)
 BASE_DIR = Path(__file__).resolve().parent.parent
-OUTPUT_LONG_FORMAT = BASE_DIR / "merged_long_format.csv"
-OUTPUT_FEATURES = BASE_DIR / "all_stocks_features_1D.csv"
+OUTPUT_DIR = BASE_DIR / "path" / "ranknet"
+OUTPUT_LONG_FORMAT = OUTPUT_DIR / "merged_long_format.csv"
+OUTPUT_FEATURES = OUTPUT_DIR / "all_stocks_features_1D.csv"
 
 PRICE_COLS = ['open', 'high', 'low', 'close', 'volume']
 SYMBOL_SPECIFIC_COLS = ['return_1d_lag_1', 'vol_ma5_lag_1']

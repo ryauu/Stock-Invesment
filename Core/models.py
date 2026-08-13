@@ -6,11 +6,13 @@ class model_stock():
         self.ts = int(now.timestamp())
         #OHLC
         self.priceOpen = data["priceOpen"]
+        self.priceReference = data.get("priceReference", self.priceOpen)
         self.priceClose = data["priceClose"]
         self.priceDayHigh= data["priceHigh"]
         self.priceDayLow= data["priceLow"]
         #Volume
         self.totalVolume = data["totalVolume"]
+
     def printed(self):
         t = datetime.datetime.fromtimestamp(self.ts)
 
